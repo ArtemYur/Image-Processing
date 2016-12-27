@@ -1,16 +1,13 @@
-﻿using EvilDICOM.Core;
-using EvilDICOM.Core.Element;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-namespace RGR_1s_5c
+﻿namespace RGR_1s_5c
 {
+    using EvilDICOM.Core;
+    using EvilDICOM.Core.Element;
+    using System;
+    using System.Drawing;
+    using System.IO;
+    using System.Threading.Tasks;
+    using System.Windows.Forms;
+
     partial class MainForm
     {
         private int _maxWidth;
@@ -50,12 +47,11 @@ namespace RGR_1s_5c
                 var patientPositionTag = new Tag("0018", "5100");
                 var patientOrientationTag = new Tag("0020", "0020");
                 var pixelSpacingTag = new Tag("0028", "0030");
-                //var anatomicalOrientationTypeTag = new Tag("0010", "2210");
 
                 var width = dcmObj.FindFirst(columnsTag);
                 var height = dcmObj.FindFirst(rowsTag);
                 var bitsAllocated = dcmObj.FindFirst(bitsAllocatedTag);
-                
+
                 var stream = dcmObj.PixelStream;
 
                 _imageOrientation = dcmObj.FindFirst(imageOrientationTag);
@@ -63,7 +59,6 @@ namespace RGR_1s_5c
                 _patientPosition = dcmObj.FindFirst(patientPositionTag);
                 _patientOrientation = dcmObj.FindFirst(patientOrientationTag);
                 _pixelSpacing = dcmObj.FindFirst(pixelSpacingTag);
-                //var anatomicalOrientationType = dcmObj.FindFirst(anatomicalOrientationTypeTag);
 
                 switch ((ushort)bitsAllocated.DData)
                 {
@@ -92,7 +87,7 @@ namespace RGR_1s_5c
 
             if (windowWidth < _maxWidth && windowHeight < _maxHeight)
             {
-                this.Invoke(new MethodInvoker(delegate () 
+                this.Invoke(new MethodInvoker(delegate ()
                 {
                     this.ClientSize = new Size(windowWidth, windowHeight);
                 }));
