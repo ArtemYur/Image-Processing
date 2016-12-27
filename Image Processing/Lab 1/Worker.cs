@@ -126,10 +126,11 @@
 
             // describes a transformation that produces a parallel projection
             GL.Ortho(-Length / 2, Length / 2, -Length / 2, Length / 2, -1.0, 1.0);
-            
+            //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
             InitStateFromCylindric();
             DrawLine();
-
+            SwapBuffers();
             Keyboard.KeyDown += Keyboard_KeyDown;
         }
         
@@ -146,13 +147,13 @@
 
         private void DrawLine()
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             
             GL.Begin(BeginMode.Points);
             Bresenham8Line();
             GL.End();
 
-            SwapBuffers();
+            
         }
 
         protected void InitStateFromCylindric()

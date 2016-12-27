@@ -16,7 +16,7 @@
         public static void Execute()
         {
             var dcm = DICOMObject.Read("DICOM_Image_for_Lab_2.dcm");
-            
+
             var rows = new Tag("0028", "0010");
             var columns = new Tag("0028", "0011");
 
@@ -37,7 +37,7 @@
                     var pixels = new byte[stream.Length];
                     stream.Read(pixels, 0, pixels.Length);
 
-                    //var bitmap = pixels.ToList().ToBitmap((ushort)width.DData, (ushort)height.DData);
+                    var bitmap = pixels.ToList().ToBitmap((ushort)width.DData, (ushort)height.DData);
 
                     var scene = new Scene(pixels, (System.DateTime)studyDate.DData, (ushort)width.DData, (ushort)height.DData);
                     scene.Run(30.0);
@@ -48,12 +48,12 @@
         }
     }
 
-    class Scene1 
+    class Scene1
     {
 
     }
 
-        class Scene : GameWindow
+    class Scene : GameWindow
     {
         Bitmap ImageBitmap { get; set; }
         System.DateTime StudyDate { get; set; }
@@ -69,7 +69,7 @@
         {
             this.image = image;
             //ImageBitmap = image;
-            StudyDate = studyDate;  
+            StudyDate = studyDate;
 
             GL.Enable(EnableCap.Texture2D);
         }
@@ -79,7 +79,7 @@
             GL.Enable(EnableCap.Texture2D);
             Keyboard.KeyDown += KeyboardKeyDown;
 
-            DrawImage();            
+            DrawImage();
         }
 
         private void KeyboardKeyDown(object sender, KeyboardKeyEventArgs e)
@@ -133,10 +133,10 @@
             GL.TexCoord2(0.0f, 0.0f); GL.Vertex2(-1f, -1f);
 
             GL.End();
-            
+
             SwapBuffers();
         }
-        
+
         protected override void OnResize(EventArgs e)
         {
             GL.Viewport(0, 0, Width, Height);
