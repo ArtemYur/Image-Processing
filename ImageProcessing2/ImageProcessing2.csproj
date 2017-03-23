@@ -58,7 +58,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\PixelTransformation.cs" />
+    <Compile Include="Common\RgbImage.cs" />
+    <Compile Include="Common\RgbImageProvider.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
