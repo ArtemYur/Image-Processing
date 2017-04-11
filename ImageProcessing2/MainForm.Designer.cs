@@ -37,7 +37,7 @@
             this.glControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.glControl.Location = new System.Drawing.Point(0, 0);
             this.glControl.Name = "glControl";
-            this.glControl.Size = new System.Drawing.Size(256, 256);
+            this.glControl.Size = new System.Drawing.Size(512, 512);
             this.glControl.TabIndex = 0;
             this.glControl.VSync = false;
             this.glControl.Load += new System.EventHandler(this.glControl_Load);
@@ -48,7 +48,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(256, 256);
+            this.ClientSize = new System.Drawing.Size(512, 512);
             this.Controls.Add(this.glControl);
             this.Name = "MainForm";
             this.Text = "MainForm";
