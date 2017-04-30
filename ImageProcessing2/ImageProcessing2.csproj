@@ -58,10 +58,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\MatrixHelper.cs" />
-    <Compile Include="Common\Image.cs" />
-    <Compile Include="Common\DicomImageProvider.cs" />
-    <Compile Include="Common\Prompt.cs" />
     <Compile Include="Common\RgbImage.cs" />
     <Compile Include="Common\RgbImageProvider.cs" />
     <Compile Include="MainForm.cs">
