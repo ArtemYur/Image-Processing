@@ -1,45 +1,52 @@
 ﻿using System;
-using System.Drawing;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ImageProcessing2.Common;
 using OpenTK.Graphics.OpenGL;
+using Image = ImageProcessing2.Common.Image;
 
 namespace ImageProcessing2
 {
     public partial class MainForm
     {
         private static int _texId;
-        private static bool _textureRendered;
+        private static ImageLoadingState _imageLoadingState = ImageLoadingState.NotLoaded;
 
-        private static RgbImageProvider _rgbImageProvider;
+        private static DicomImageLoader _dicomImageLoader;
+        private static Dictionary<string, Image> _imageProvider;
+        private Image _image;
 
         private async void glControl_Load(object sender, EventArgs e)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Enable(EnableCap.Texture2D);
 
-            _rgbImageProvider = new RgbImageProvider();
+            _dicomImageLoader = new DicomImageLoader();
 
-            var image = await _rgbImageProvider.GetOriginalImage();
-            
-            ResizeWindow(image.Width, image.Height);
+            _imageProvider = new Dictionary<string, Image>();
+
+            _image = await _dicomImageLoader.LoadDcmImage();
+
+            _imageProvider.UpsertOriginalImage(_image);
+
+            _imageLoadingState = ImageLoadingState.Loaded;
 
             this.Invoke(new MethodInvoker(glControl.Refresh));
 
             glControl.SwapBuffers();
         }
 
-        private async void glControl_Paint(object sender, PaintEventArgs e)
+        private void glControl_Paint(object sender, PaintEventArgs e)
         {
-            if (_rgbImageProvider != null)
+            if (_dicomImageLoader != null)
             {
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-                if (!_textureRendered)
+                if (_imageLoadingState == ImageLoadingState.Loaded)
                 {
-                    await GenerateAndBindTexture();
-                    _textureRendered = true;
+                    GenerateAndBindTexture();
+                    _imageLoadingState = ImageLoadingState.Rendered;
                 }
 
                 OnRenderFrame(e);
@@ -47,37 +54,40 @@ namespace ImageProcessing2
             }
         }
 
-        private async void glControl_KeyPress(object sender, KeyPressEventArgs e)
+        private void glControl_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (_rgbImageProvider != null)
+            if (_imageProvider != null)
             {
                 if (e.KeyChar == Convert.ToChar(Keys.Q))
-                    BindTexture(await _rgbImageProvider.GetOriginalImage());
+                    _image = _imageProvider.GetOriginalImage();
 
                 if (e.KeyChar == Convert.ToChar(Keys.W))
-                    BindTexture(await _rgbImageProvider.GetDisjunctionOfOriginalImageWithBackgroundBuffer());
+                    _image = _imageProvider.GetNormalizedImage();
 
                 if (e.KeyChar == Convert.ToChar(Keys.E))
-                    BindTexture(await _rgbImageProvider.GetGradientedOriginalImage());
+                    _image = _imageProvider.GetInverseImage();
+                
+                BindTexture(_image);
 
                 this.Invoke(new MethodInvoker(glControl.Refresh));
             }
         }
-
-        private async Task GenerateAndBindTexture()
+        
+        private void GenerateAndBindTexture()
         {
             GL.GenTextures(1, out _texId);
-            BindTexture(await _rgbImageProvider.GetOriginalImage());
+            BindTexture(_image);
         }
         
-        private void BindTexture(RgbImage<byte> rgbImage)
+        private void BindTexture(Image image, PixelInternalFormat pixelInternalFormat = PixelInternalFormat.Luminance,
+            PixelFormat pixelFormat = PixelFormat.Luminance)
         {
             GL.BindTexture(TextureTarget.Texture2D, _texId);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, rgbImage.Width, rgbImage.Height, 0,
-                PixelFormat.Rgb, PixelType.UnsignedByte, rgbImage.ImmageArray);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, pixelInternalFormat, image.Width, image.Height, 0,
+                pixelFormat, PixelType.UnsignedByte, image.ImageArray);
         }
-        
+
         private void OnRenderFrame(PaintEventArgs e)
         {
             GL.MatrixMode(MatrixMode.Modelview);
@@ -94,22 +104,16 @@ namespace ImageProcessing2
 
             GL.End();
         }
-        
-        private void ResizeWindow(int width, int height)
-        {
-            if (width >= _maxWidth || height >= _maxHeight)
-            {
-                MessageBox.Show("Size of the given image is unsupported!");
-                return;
-            }
 
-            if (ClientSize.Width != width || ClientSize.Height != height)
-            {
-                this.Invoke(new MethodInvoker(delegate ()
-                {
-                    this.ClientSize = new Size(width, height);
-                }));
-            }
+        private void glControl_MouseMove(object sender, MouseEventArgs e)
+        {
+            brightnessDetail.Text = _image?.ImageArray[
+                (_image.Height - e.Y - 1) * _image.Width + e.X].ToString() ?? "";
+        }
+
+        enum ImageLoadingState
+        {
+            NotLoaded, Loaded, Rendered
         }
     }
 }
