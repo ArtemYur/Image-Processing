@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ImageProcessing2.Common
 {
-    public static class ImageProvider
+    public static partial class ImageProvider
     {
         private const string Original = "Original";
         private const string Normalized = "Normalized";

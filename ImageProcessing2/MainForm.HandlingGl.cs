@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using ImageProcessing2.Common;
 using OpenTK.Graphics.OpenGL;
@@ -59,14 +58,29 @@ namespace ImageProcessing2
             if (_imageProvider != null)
             {
                 if (e.KeyChar == Convert.ToChar(Keys.Q))
+                {
+                    this.Text = "Original matrix";
                     _image = _imageProvider.GetOriginalImage();
+                }
 
                 if (e.KeyChar == Convert.ToChar(Keys.W))
-                    _image = _imageProvider.GetNormalizedImage();
+                {
+                    this.Text = "N matrix";
+                    _image = _imageProvider.GetFilteredImageWithNMask();
+                }
 
                 if (e.KeyChar == Convert.ToChar(Keys.E))
-                    _image = _imageProvider.GetInverseImage();
-                
+                {
+                    this.Text = "S matrix";
+                    _image = _imageProvider.GetFilteredImageWithSMask();
+                }
+
+                if (e.KeyChar == Convert.ToChar(Keys.R))
+                {
+                    this.Text = "Se matrix";
+                    _image = _imageProvider.GetFilteredImageWithSeMask();
+                }
+
                 BindTexture(_image);
 
                 this.Invoke(new MethodInvoker(glControl.Refresh));
